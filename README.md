@@ -25,7 +25,7 @@ chmod +x install.sh
 ./install.sh
 ```
 
-### Windows (PowerShell)
+### Windows (PowerShell **with administrator privileges**)
 
 ```powershell
 git clone https://github.com/koenvdheide/claude-reviewer.git
