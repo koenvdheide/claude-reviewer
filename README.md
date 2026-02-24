@@ -11,9 +11,12 @@ What makes this different from a one-off review prompt is the **persistent memor
 | `agents/reviewer.md` | The reviewer subagent definition |
 | `claude-md-snippet.md` | Drop-in section for your `~/.claude/CLAUDE.md` |
 | `examples/domain-specific.md` | Example of domain-specific review checks |
-| `install.sh` | Symlinks everything into `~/.claude/` |
+| `install.sh` | Installer for macOS / Linux / WSL |
+| `install.ps1` | Installer for Windows (PowerShell) |
 
 ## Installation
+
+### macOS / Linux / WSL
 
 ```bash
 git clone https://github.com/koenvdheide/claude-reviewer.git
@@ -22,9 +25,27 @@ chmod +x install.sh
 ./install.sh
 ```
 
+### Windows (PowerShell)
+
+```powershell
+git clone https://github.com/koenvdheide/claude-reviewer.git
+cd claude-reviewer
+powershell -ExecutionPolicy Bypass -File install.ps1
+```
+
+> **Note:** Symlinking requires Developer Mode (Settings → Privacy & Security → For Developers)
+> or an elevated prompt. If neither is available, the script copies the file instead —
+> re-run `install.ps1` after pulling updates to keep it current.
+>
+> On Windows, `~/.claude/` maps to `%USERPROFILE%\.claude\`.
+
+---
+
 Then add the contents of `claude-md-snippet.md` to your `~/.claude/CLAUDE.md`.
 
-> **Note:** `jq` is recommended for JSON validation (`brew install jq` / `apt install jq`). If unavailable, the reviewer degrades gracefully to manual inspection with lower confidence.
+> **Note:** `jq` is recommended for JSON validation
+> (`brew install jq` / `apt install jq` / `winget install jqlang.jq`).
+> If unavailable, the reviewer degrades gracefully to manual inspection with lower confidence.
 
 ## How it works
 
@@ -103,9 +124,18 @@ The reviewer works best when run on a different model than the one that generate
 
 ## Uninstall
 
+**macOS / Linux / WSL:**
+
 ```bash
 cd claude-reviewer
 ./install.sh --uninstall
+```
+
+**Windows:**
+
+```powershell
+cd claude-reviewer
+powershell -ExecutionPolicy Bypass -File install.ps1 -Uninstall
 ```
 
 ## Troubleshooting
