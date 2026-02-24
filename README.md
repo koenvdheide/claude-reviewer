@@ -41,6 +41,8 @@ After each review, the reviewer updates `~/.claude/agent-memory/reviewer/MEMORY.
 
 Before each review, the memory is automatically loaded into the reviewer's context. This creates a feedback loop: catch error → log it → check for it next time.
 
+Memory is scoped to **user level** by default (`memory: user` in the frontmatter), meaning the reviewer shares a single memory across all your projects. Errors caught in one project inform reviews in every other project. If you'd prefer project-scoped memory instead, change `memory: user` to `memory: project` in `agents/reviewer.md` — see the [Claude Code subagent memory docs](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory) for details.
+
 **Important:** Periodically curate the memory yourself — consolidate recurring patterns, delete false positives, keep it under 200 lines. The loop only works if the data is clean.
 
 ### Auto-review (optional)
