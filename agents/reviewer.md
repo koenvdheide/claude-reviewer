@@ -79,11 +79,9 @@ Add your own domain-specific checks below this line as you encounter recurring i
 <!--
 Add checks below. Use this format:
 
-### [Domain] — [Topic]
-- **Rule**: what must hold
-- **How to detect**: concrete check or tool command
-- **Example failure**: what a violation looks like
-- **Only add when**: this check has caught a real error at least once
+### [Domain or Topic]
+- First check
+- Second check
 -->
 
 ## Output Format
