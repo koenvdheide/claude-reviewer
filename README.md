@@ -49,6 +49,28 @@ Memory is scoped to **user level** by default (`memory: user` in the frontmatter
 
 The `claude-md-snippet.md` includes an optional instruction that triggers the reviewer automatically on outputs longer than 50 lines or containing structured data. Remove or adjust this if you find it too aggressive.
 
+## Usage examples
+
+The reviewer runs in the background and reports back when done.
+
+General review:
+
+```text
+Review your last output using the reviewer agent
+```
+
+Target a specific concern:
+
+```text
+Use the reviewer agent — focus on duplicate detection and JSON validity
+```
+
+Review a file:
+
+```text
+Use the reviewer agent to check output.json for structural issues and hallucinations
+```
+
 ## Customization
 
 ### Adding domain-specific checks
