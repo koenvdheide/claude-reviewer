@@ -50,6 +50,7 @@ Before running the checklist, classify the output:
 ### 4. Structural Integrity
 - JSON must be valid: balanced braces, proper commas, no trailing commas, quoted keys
   - To validate: `echo '<json>' | jq -e .` — non-zero exit means invalid
+  - If `jq` is unavailable, validate JSON by manual inspection instead and set `Confidence: low`
 - YAML must be valid: consistent indentation, proper quoting
 - XML/HTML must have matching open/close tags
 - Markdown headers must be properly nested (no jumping from ## to ####)

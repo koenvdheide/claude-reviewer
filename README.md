@@ -24,6 +24,8 @@ chmod +x install.sh
 
 Then add the contents of `claude-md-snippet.md` to your `~/.claude/CLAUDE.md`.
 
+> **Note:** `jq` is recommended for JSON validation (`brew install jq` / `apt install jq`). If unavailable, the reviewer degrades gracefully to manual inspection with lower confidence.
+
 ## How it works
 
 ### The reviewer agent
@@ -45,9 +47,23 @@ Memory is scoped to **user level** by default (`memory: user` in the frontmatter
 
 **Important:** Periodically curate the memory yourself — consolidate recurring patterns, delete false positives, keep it under 200 lines. The loop only works if the data is clean.
 
+### Permissions & safety
+
+`memory: user` causes Claude Code to automatically enable Read, Write, and Edit for the subagent so it can maintain its memory files. The reviewer prompt restricts writes to the memory directory only, but if you want a hard boundary, add this to `~/.claude/settings.json`:
+
+```json
+{
+  "permissions": {
+    "deny": ["Edit(./**)", "Write(./**)"]
+  }
+}
+```
+
+This blocks edits inside any working directory while leaving `~/.claude/` (where agent memory lives) unaffected.
+
 ### Auto-review (optional)
 
-The `claude-md-snippet.md` includes an optional instruction that triggers the reviewer automatically on outputs longer than 50 lines or containing structured data. Remove or adjust this if you find it too aggressive.
+The `claude-md-snippet.md` includes an optional instruction that triggers the reviewer automatically on outputs longer than 50 lines or containing structured data. Remove or adjust this if you find it too aggressive. Note: this is a prompted protocol, not a guaranteed hook — the model may skip it on short or simple responses.
 
 ## Usage examples
 
@@ -91,6 +107,13 @@ The reviewer works best when run on a different model than the one that generate
 cd claude-reviewer
 ./install.sh --uninstall
 ```
+
+## Troubleshooting
+
+- **Verify the agent loaded**: run `/agents` in Claude Code and confirm `reviewer` appears in the list.
+- **Check permissions**: run `/permissions` to confirm tool access matches the frontmatter.
+- **Health check**: run `/doctor` for installation diagnostics.
+- **Inspect behavior**: subagent transcripts live in `~/.claude/projects/` and can help diagnose unexpected reviewer output.
 
 ## Contributing
 
