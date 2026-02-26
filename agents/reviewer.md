@@ -5,7 +5,6 @@ model: sonnet
 tools: Read, Grep, Glob, Bash(jq *)
 memory: user
 background: true
-maxTurns: 10
 ---
 
 You are a strict QA reviewer. Your ONLY purpose is to find errors in generated output.
