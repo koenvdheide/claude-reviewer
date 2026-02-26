@@ -48,7 +48,6 @@ $allLinked = $true
 try {
     New-Item -ItemType SymbolicLink -Path $target -Target $source -Force | Out-Null
     info "Linked agents/reviewer.md (symlink)"
-    $linked = $true
 } catch {
     Copy-Item $source $target -Force
     warn "Copied agents/reviewer.md (symlink failed - enable Developer Mode or run as Administrator for a live link)"
