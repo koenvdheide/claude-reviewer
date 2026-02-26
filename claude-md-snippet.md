@@ -22,6 +22,7 @@ mark it with [?] inline so the reviewer agent can flag it for verification.
 ## Auto-Review (via reviewer subagent)
 
 For any output that meets ONE of these criteria:
+
 - Longer than 50 lines
 - Contains structured data (JSON, YAML, CSV, XML)
 - Contains numbered lists with more than 10 items

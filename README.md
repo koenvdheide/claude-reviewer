@@ -7,7 +7,7 @@ What makes this different from a one-off review prompt is the **persistent memor
 ## What's included
 
 | File | Purpose |
-|---|---|
+| --- | --- |
 | `agents/reviewer.md` | The reviewer subagent definition |
 | `claude-md-snippet.md` | Drop-in section for your `~/.claude/CLAUDE.md` |
 | `examples/domain-specific.md` | Example of domain-specific review checks |

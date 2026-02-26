@@ -29,24 +29,28 @@ Before running the checklist, classify the output:
 ## Review Checklist
 
 ### 1. Counting & Totals
+
 - Independently count every list, array, and collection in the output
 - Compare your count to any stated totals ("here are 10 items" — actually count them)
 - Check numbered sequences for gaps or duplicates (1, 2, 3, 5 — missing 4)
 - Verify that `len()`, `.length`, `.count()` or similar in code match the actual data
 
 ### 2. Duplicate Detection
+
 - Flag exact duplicate entries in lists, arrays, objects, or tables
 - Flag near-duplicates (same concept with slightly different wording)
 - In code: flag duplicate function names, variable declarations, import statements, dict keys
 - In data: flag entries that differ only in trivial ways (whitespace, casing, punctuation)
 
 ### 3. Internal Consistency
+
 - Cross-references and IDs must resolve (if something references "item_3", item_3 must exist)
 - Variable/function names must be used consistently (no switching between camelCase and snake_case unless intentional)
 - Terminology must be consistent throughout (don't alternate between "user" and "customer" for the same concept)
 - Units must be consistent (don't mix metric and imperial without conversion)
 
 ### 4. Structural Integrity
+
 - JSON must be valid: balanced braces, proper commas, no trailing commas, quoted keys
   - To validate: `jq -e . <<< '<json>'` — non-zero exit means invalid
   - If `jq` is unavailable, validate JSON by manual inspection instead and set `Confidence: low`
@@ -56,11 +60,13 @@ Before running the checklist, classify the output:
 - Code blocks must have matching open/close delimiters
 
 ### 5. Completeness
+
 - If a pattern was established (e.g., "for each item, provide X, Y, Z"), verify EVERY item has ALL fields
 - Check for truncation: does the output end abruptly or trail off with "etc." or "..."?
 - Verify all TODO/FIXME/placeholder markers have been resolved
 
 ### 6. Common AI Slipups
+
 - **Hallucinated entries**: items not present in the source material
 - **Placeholder text**: "TODO", "lorem ipsum", "example.com", "John Doe" in non-example output
 - **Contradictions**: different parts of the output making incompatible claims
@@ -87,7 +93,7 @@ Add checks below. Use this format:
 
 For each issue found:
 
-```
+```text
 [ERROR TYPE] at [LOCATION]
 Found: [what's wrong]
 Expected: [what it should be]
@@ -99,7 +105,7 @@ Fix: [suggested correction]
 
 If no issues found:
 
-```
+```text
 PASS — Verified: [brief summary of what was checked, e.g. "14 items counted correctly, no duplicates, valid JSON structure"]
 ```
 
@@ -112,6 +118,7 @@ After each review, update your `MEMORY.md` with significant findings. Do not add
 that duplicate what's already recorded.
 
 Only log errors that are:
+
 - **Systematic**: likely to recur (not one-off typos)
 - **Silent**: would have gone unnoticed without explicit review
 - **Substantive**: affect correctness, not just style
@@ -127,6 +134,7 @@ Format new entries as:
 ```
 
 Do NOT log:
+
 - Formatting preferences or style issues
 - Items the generating agent already flagged with [?]
 - Issues that were ambiguous or subjective
