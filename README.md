@@ -86,7 +86,7 @@ This blocks edits inside any working directory while leaving `~/.claude/` (where
 
 ### Auto-review (optional)
 
-The `claude-md-snippet.md` includes an optional instruction that triggers the reviewer automatically on outputs longer than 50 lines or containing structured data. Remove or adjust this if you find it too aggressive. Note: this is a prompted protocol, not a guaranteed hook — the model may skip it on short or simple responses.
+The `claude-md-snippet.md` includes an optional instruction that triggers the reviewer automatically when output meets any of four criteria: longer than 50 lines, contains structured data, contains numbered lists with more than 10 items, or involves data from external sources. Remove or adjust these if you find them too aggressive. Note: this is a prompted protocol, not a guaranteed hook — the model may skip it on short or simple responses.
 
 ## Usage examples
 
