@@ -3,8 +3,8 @@ param([switch]$Uninstall)
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ClaudeDir = "$HOME\.claude"
 
-function info($msg) { Write-Host "v $msg" -ForegroundColor Green }
-function warn($msg) { Write-Host "! $msg" -ForegroundColor Yellow }
+function info($msg) { Write-Host "[OK] $msg" -ForegroundColor Green }
+function warn($msg) { Write-Host "[!!] $msg" -ForegroundColor Yellow }
 
 if ($Uninstall) {
     Write-Host "Uninstalling claude-reviewer..."
