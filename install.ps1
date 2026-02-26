@@ -14,10 +14,10 @@ if ($Uninstall) {
         Remove-Item $target -Force
         info "Removed agents/reviewer.md"
     }
-    $skillTarget = "$ClaudeDir\skills\review\SKILL.md"
+    $skillTarget = "$ClaudeDir\skills\qa\SKILL.md"
     if (Test-Path $skillTarget) {
         Remove-Item $skillTarget -Force
-        info "Removed skills/review/SKILL.md"
+        info "Removed skills/qa/SKILL.md"
     }
 
     Write-Host ""
@@ -54,24 +54,24 @@ try {
     $allLinked = $false
 }
 
-# Symlink the /review skill (fall back to copy if symlinks are unavailable)
-New-Item -ItemType Directory -Force -Path "$ClaudeDir\skills\review" | Out-Null
+# Symlink the /qa skill (fall back to copy if symlinks are unavailable)
+New-Item -ItemType Directory -Force -Path "$ClaudeDir\skills\qa" | Out-Null
 
-$skillTarget = "$ClaudeDir\skills\review\SKILL.md"
-$skillSource = "$ScriptDir\skills\review\SKILL.md"
+$skillTarget = "$ClaudeDir\skills\qa\SKILL.md"
+$skillSource = "$ScriptDir\skills\qa\SKILL.md"
 
 $existingSkill = Get-Item $skillTarget -ErrorAction SilentlyContinue
 if ($existingSkill -and $existingSkill.LinkType -ne "SymbolicLink") {
-    warn "skills/review/SKILL.md already exists and is not a symlink. Backing up to SKILL.md.bak"
+    warn "skills/qa/SKILL.md already exists and is not a symlink. Backing up to SKILL.md.bak"
     Move-Item $skillTarget "$skillTarget.bak" -Force
 }
 
 try {
     New-Item -ItemType SymbolicLink -Path $skillTarget -Target $skillSource -Force | Out-Null
-    info "Linked skills/review/SKILL.md (symlink)"
+    info "Linked skills/qa/SKILL.md (symlink)"
 } catch {
     Copy-Item $skillSource $skillTarget -Force
-    warn "Copied skills/review/SKILL.md (symlink failed)"
+    warn "Copied skills/qa/SKILL.md (symlink failed)"
     $allLinked = $false
 }
 
@@ -84,7 +84,7 @@ Write-Host "  2. (Optional) Add domain-specific checks from examples\domain-spec
 Write-Host "     to agents\reviewer.md"
 Write-Host ""
 Write-Host "Usage:"
-Write-Host "  - Type /review in Claude Code to invoke the slash command"
+Write-Host "  - Type /qa in Claude Code to invoke the slash command"
 Write-Host "  - Or ask: ""review your last output using the reviewer agent"""
 Write-Host "  - The reviewer will log significant findings to $ClaudeDir\agent-memory\reviewer\MEMORY.md"
 Write-Host ""

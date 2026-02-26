@@ -11,7 +11,7 @@ What makes this different from a one-off review prompt is the **persistent memor
 | `agents/reviewer.md` | The reviewer subagent definition |
 | `claude-md-snippet.md` | Drop-in section for your `~/.claude/CLAUDE.md` |
 | `examples/domain-specific.md` | Example of domain-specific review checks |
-| `skills/review/SKILL.md` | `/review` slash command that invokes the reviewer |
+| `skills/qa/SKILL.md` | `/qa` slash command that invokes the reviewer |
 | `install.sh` | Installer for macOS / Linux / WSL |
 | `install.ps1` | Installer for Windows (PowerShell) |
 
@@ -54,7 +54,7 @@ Then add the contents of `claude-md-snippet.md` to your `~/.claude/CLAUDE.md`.
 
 Invoke it in any Claude Code session:
 
-- Type **`/review`** in Claude Code (slash command installed by the install script)
+- Type **`/qa`** in Claude Code (slash command installed by the install script)
 - Ask Claude to **"review your last output using the reviewer agent"**
 - Or set up auto-review (see below) so it triggers automatically on large outputs
 
