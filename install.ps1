@@ -14,6 +14,11 @@ if ($Uninstall) {
         Remove-Item $target -Force
         info "Removed agents/reviewer.md"
     }
+    $skillTarget = "$ClaudeDir\skills\review\SKILL.md"
+    if (Test-Path $skillTarget) {
+        Remove-Item $skillTarget -Force
+        info "Removed skills/review/SKILL.md"
+    }
 
     Write-Host ""
     warn "Agent memory at $ClaudeDir\agent-memory\reviewer\ was NOT removed (contains your data)."
@@ -39,7 +44,7 @@ if ($existing -and $existing.LinkType -ne "SymbolicLink") {
     Move-Item $target "$target.bak" -Force
 }
 
-$linked = $false
+$allLinked = $true
 try {
     New-Item -ItemType SymbolicLink -Path $target -Target $source -Force | Out-Null
     info "Linked agents/reviewer.md (symlink)"
@@ -47,6 +52,28 @@ try {
 } catch {
     Copy-Item $source $target -Force
     warn "Copied agents/reviewer.md (symlink failed - enable Developer Mode or run as Administrator for a live link)"
+    $allLinked = $false
+}
+
+# Symlink the /review skill (fall back to copy if symlinks are unavailable)
+New-Item -ItemType Directory -Force -Path "$ClaudeDir\skills\review" | Out-Null
+
+$skillTarget = "$ClaudeDir\skills\review\SKILL.md"
+$skillSource = "$ScriptDir\skills\review\SKILL.md"
+
+$existingSkill = Get-Item $skillTarget -ErrorAction SilentlyContinue
+if ($existingSkill -and $existingSkill.LinkType -ne "SymbolicLink") {
+    warn "skills/review/SKILL.md already exists and is not a symlink. Backing up to SKILL.md.bak"
+    Move-Item $skillTarget "$skillTarget.bak" -Force
+}
+
+try {
+    New-Item -ItemType SymbolicLink -Path $skillTarget -Target $skillSource -Force | Out-Null
+    info "Linked skills/review/SKILL.md (symlink)"
+} catch {
+    Copy-Item $skillSource $skillTarget -Force
+    warn "Copied skills/review/SKILL.md (symlink failed)"
+    $allLinked = $false
 }
 
 Write-Host ""
@@ -58,12 +85,13 @@ Write-Host "  2. (Optional) Add domain-specific checks from examples\domain-spec
 Write-Host "     to agents\reviewer.md"
 Write-Host ""
 Write-Host "Usage:"
-Write-Host "  - In Claude Code, ask: ""review your last output using the reviewer agent"""
+Write-Host "  - Type /review in Claude Code to invoke the slash command"
+Write-Host "  - Or ask: ""review your last output using the reviewer agent"""
 Write-Host "  - The reviewer will log significant findings to $ClaudeDir\agent-memory\reviewer\MEMORY.md"
 Write-Host ""
 Write-Host "Curate MEMORY.md periodically to consolidate patterns and remove false positives!"
 
-if (-not $linked) {
+if (-not $allLinked) {
     Write-Host ""
-    warn "You have a copy, not a symlink. Re-run install.ps1 after pulling updates to keep it current."
+    warn "One or more files were copied instead of symlinked. Re-run install.ps1 after pulling updates to keep them current."
 }

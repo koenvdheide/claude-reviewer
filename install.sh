@@ -18,8 +18,9 @@ error() { echo -e "${RED}✗${NC} $1"; }
 if [[ "${1:-}" == "--uninstall" ]]; then
     echo "Uninstalling claude-reviewer..."
     
-    [[ -L "$CLAUDE_DIR/agents/reviewer.md" ]] && rm "$CLAUDE_DIR/agents/reviewer.md" && info "Removed agents/reviewer.md"
-    
+    [[ -e "$CLAUDE_DIR/agents/reviewer.md" ]] && rm "$CLAUDE_DIR/agents/reviewer.md" && info "Removed agents/reviewer.md"
+    [[ -e "$CLAUDE_DIR/skills/review/SKILL.md" ]] && rm "$CLAUDE_DIR/skills/review/SKILL.md" && info "Removed skills/review/SKILL.md"
+
     echo ""
     warn "Agent memory at $CLAUDE_DIR/agent-memory/reviewer/ was NOT removed (contains your data)."
     warn "Remove the review protocol section from $CLAUDE_DIR/CLAUDE.md manually."
@@ -42,6 +43,14 @@ fi
 ln -sf "$SCRIPT_DIR/agents/reviewer.md" "$CLAUDE_DIR/agents/reviewer.md"
 info "Linked agents/reviewer.md"
 
+# Symlink the /review skill
+mkdir -p "$CLAUDE_DIR/skills/review"
+if [[ -e "$CLAUDE_DIR/skills/review/SKILL.md" ]] && [[ ! -L "$CLAUDE_DIR/skills/review/SKILL.md" ]]; then
+    warn "skills/review/SKILL.md already exists and is not a symlink. Backing up to SKILL.md.bak"
+    mv "$CLAUDE_DIR/skills/review/SKILL.md" "$CLAUDE_DIR/skills/review/SKILL.md.bak"
+fi
+ln -sf "$SCRIPT_DIR/skills/review/SKILL.md" "$CLAUDE_DIR/skills/review/SKILL.md"
+info "Linked skills/review/SKILL.md"
 
 echo ""
 echo "Installation complete!"
@@ -52,7 +61,8 @@ echo "  2. (Optional) Add domain-specific checks from examples/domain-specific.m
 echo "     to agents/reviewer.md"
 echo ""
 echo "Usage:"
-echo "  - In Claude Code, ask: \"review your last output using the reviewer agent\""
+echo "  - Type /review in Claude Code to invoke the slash command"
+echo "  - Or ask: \"review your last output using the reviewer agent\""
 echo "  - The reviewer will log significant findings to ~/.claude/agent-memory/reviewer/MEMORY.md"
 echo ""
 echo "Curate MEMORY.md periodically to consolidate patterns and remove false positives!"
