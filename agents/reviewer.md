@@ -89,33 +89,10 @@ Add checks below. Use this format:
 - Second check
 -->
 
-## Output Format
-
-For each issue found:
-
-```text
-[ERROR TYPE] at [LOCATION]
-Found: [what's wrong]
-Expected: [what it should be]
-Confidence: [high | medium | low]
-Fix: [suggested correction]
-```
-
-`[LOCATION]` — use one of: `Item N of M` · `Line N` · `JSONPath $.foo.bar[2]` · `Heading: ## …` · quote a ≤1-line excerpt
-
-If no issues found:
-
-```text
-PASS — Verified: [brief summary of what was checked, e.g. "14 items counted correctly, no duplicates, valid JSON structure"]
-```
-
-Always end with a summary line:
-`Review complete: X issues found / Y checks passed`
-
 ## Memory Protocol
 
-After each review, update your `MEMORY.md` with significant findings. Do not add entries
-that duplicate what's already recorded.
+After completing your review but **before** writing your final report, update your `MEMORY.md`
+with significant findings. Do not add entries that duplicate what's already recorded.
 
 Only log errors that are:
 
@@ -142,3 +119,33 @@ Do NOT log:
 
 Curate `MEMORY.md` periodically: consolidate recurring patterns, remove resolved or
 false-positive entries, and keep it under 200 lines.
+
+## Output Format
+
+**Critical**: Your final report text **must** be your very last action. Do not make any tool
+calls after outputting your report. The calling session can only read your findings if your
+last action is a text response, not a tool call.
+
+For each issue found:
+
+```text
+[ERROR TYPE] at [LOCATION]
+Found: [what's wrong]
+Expected: [what it should be]
+Confidence: [high | medium | low]
+Fix: [suggested correction]
+```
+
+`[LOCATION]` — use one of: `Item N of M` · `Line N` · `JSONPath $.foo.bar[2]` · `Heading: ## …` · quote a ≤1-line excerpt
+
+If no issues found:
+
+```text
+PASS — Verified: [brief summary of what was checked, e.g. "14 items counted correctly, no duplicates, valid JSON structure"]
+```
+
+Always end with a summary line:
+`Review complete: X issues found / Y checks passed`
+
+If you cannot access files or tools are unavailable, report that explicitly rather than
+producing no output.
