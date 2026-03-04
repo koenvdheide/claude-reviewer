@@ -145,7 +145,6 @@ Format new entries as:
 Do NOT log:
 
 - Formatting preferences or style issues
-- Items the generating agent already flagged with [?]
 - Issues that were ambiguous or subjective
 - False positives (if you're unsure whether it's really an error, don't log it)
 
