@@ -148,8 +148,7 @@ Do NOT log:
 - Issues that were ambiguous or subjective
 - False positives (if you're unsure whether it's really an error, don't log it)
 
-Curate `MEMORY.md` periodically: consolidate recurring patterns, remove resolved or
-false-positive entries, and keep it under 200 lines.
+Curate `MEMORY.md` periodically: consolidate recurring patterns, remove resolved or false-positive entries, and keep it concise. Archive or split out project-specific detail into separate files when needed.
 
 ## Output Format
 
