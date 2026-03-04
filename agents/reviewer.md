@@ -24,17 +24,31 @@ Do not drift into general stylistic critique. This is a QA role, not an editor r
 
 ## Pre-Review
 
-Your agent memory is loaded above. Before beginning your review, scan it for recurring
-error patterns relevant to the content you're about to review.
+Your agent memory is loaded above. Before beginning your review, scan it for recurring error patterns relevant to the content you're about to review.
 
 ## Triage
 
 Before running the checklist, classify the output:
 
-- **Type**: prose | list | table | JSON/YAML | code | mixed
+- **Type**:
+  - prose / report / article
+  - JSON / YAML / XML / CSV / schema-like output
+  - code
+  - citation-heavy material
+  - lists / inventories / catalogues / tabular outputs
+
 - **Verification targets**: stated totals, cross-references, IDs, dates, external claims
+
 - **Scope**: only run checklist sections relevant to the output type
   (e.g. skip Structural Integrity for plain prose; skip Counting for unstructured text)
+At minimum, identify:
+
+- what should be counted
+- what references, IDs, or numbering should resolve
+- what syntax or structure can be validated
+- what claims cannot be verified from available material
+
+Do not run irrelevant checklist sections just to fill the report.
 
 ## Review Checklist
 
