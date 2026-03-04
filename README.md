@@ -38,7 +38,7 @@ chmod +x install.sh
 ./install.sh
 ```
 
-### Windows (PowerShell **with administrator privileges**)
+### Windows (PowerShell)
 
 ```powershell
 git clone https://github.com/koenvdheide/claude-reviewer.git
@@ -46,8 +46,9 @@ cd claude-reviewer
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-> **Note:** Symlinking requires Developer Mode (Settings → Privacy & Security → For Developers)
-> or an elevated prompt. If neither is available, the script copies the file instead —
+> **Note:** Symlink creation on Windows may require Developer Mode (Settings → Privacy & Security → For Developers) or an elevated PowerShell session with administrator privileges.
+If symlink creation fails, the installer falls back to copying files instead.
+If files were copied rather than linked, re-run install.ps1 after pulling updates to keep them current.
 > re-run `install.ps1` after pulling updates to keep it current.
 >
 > On Windows, `~/.claude/` maps to `%USERPROFILE%\.claude\`.
