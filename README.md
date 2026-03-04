@@ -107,6 +107,31 @@ This tells Claude Code to invoke the reviewer subagent on the latest output.
 
 You can add the supplied claude-md-snippet.md section to your ~/.claude/CLAUDE.md. This encourages Claude Code to run a lightweight self-check on structured outputs and escalate to the reviewer for higher-risk outputs.
 
+## Output model
+
+The reviewer separates findings into two categories:
+
+### Confirmed errors
+
+Used when the issue can be directly demonstrated from the material:
+
+- wrong count
+- duplicate entry
+- unresolved reference
+- invalid JSON
+- contradiction
+
+### Verification flags
+
+Used when something looks wrong but cannot be fully proven from the available material:
+
+- suspicious citation
+- likely hallucinated claim without source proof
+- near-duplicate that may or may not be intentional
+- attribution that needs external checking
+
+These issues should be verified manually. This distinction is important because it keeps the reviewer precise and reduces incidents where the reviewer suggests fixes that are themselves hallucinations.
+
 ## Agent memory
 
 After each review, the reviewer updates its Claude Code memory with significant findings. Only errors that are **systematic** (likely to recur), **silent** (would have gone unnoticed), and **substantive** (affect correctness) get logged.
