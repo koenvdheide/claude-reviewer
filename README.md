@@ -29,6 +29,14 @@ The reviewer runs as a **background subagent**. This is intentional: QA work is 
 
 ## Installation
 
+The installer symlinks reviewer.md and the QA SKILL.md in this checkout to your Claude Code directory:
+
+agents/reviewer.md to ~/.claude/agents/reviewer.md
+
+skills/qa/SKILL.md to ~/.claude/skills/qa/SKILL.md
+
+After this symlink, the reviewer is available across your projects as a user-level subagent. This symlink lets you easily pull new updates without having to mess around with your Claude Code directory.
+
 ### macOS / Linux / WSL
 
 ```bash
