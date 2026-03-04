@@ -4,16 +4,28 @@ A global Claude Code subagent that reviews AI-generated output for common LLM er
 
 What makes this different from a one-off review prompt is the **persistent memory feedback loop** — the reviewer logs significant errors it catches to its agent memory, which is automatically loaded before each review. Over time, it gets better at catching the specific failure modes *you* encounter.
 
-## What's included
+## Why use it
 
-| File | Purpose |
-| --- | --- |
-| `agents/reviewer.md` | The reviewer subagent definition |
-| `claude-md-snippet.md` | Drop-in section for your `~/.claude/CLAUDE.md` |
-| `examples/domain-specific.md` | Example of domain-specific review checks |
-| `skills/qa/SKILL.md` | `/qa` slash command that invokes the reviewer |
-| `install.sh` | Installer for macOS / Linux / WSL |
-| `install.ps1` | Installer for Windows (PowerShell) |
+Claude is often strong at drafting but weaker at tedious verification. This reviewer is meant to catch the kinds of issues that slip through when output is long, structured, or derived from source material.
+
+Typical failure modes it helps catch:
+
+- “12 items” stated, but only 11 are present
+- duplicated rows or repeated entities
+- JSON that looks right but does not parse cleanly
+- references to sections or IDs that do not exist
+- stale totals after edits
+- internal contradictions between summary and details
+
+## How it works
+
+The package provides:
+
+- a `reviewer` subagent
+- a `/qa` slash command that calls the reviewer
+- an optional `CLAUDE.md` snippet that encourages lightweight self-checking and escalation to the reviewer
+
+The reviewer runs as a **background subagent**. This is intentional: QA work is often verbose and mechanical, and isolated background execution keeps that noise out of the main thread while still returning a concise result. Claude Code subagents are explicitly designed to run in isolated contexts and return summaries to the parent session.
 
 ## Installation
 
@@ -48,27 +60,53 @@ Then add the contents of `claude-md-snippet.md` to your `~/.claude/CLAUDE.md`.
 > (`brew install jq` / `apt install jq` / `winget install jqlang.jq`).
 > If unavailable, the reviewer degrades gracefully to manual inspection with lower confidence.
 
-## How it works
+## Usage
 
-### The reviewer agent
+You can invoke the reviewer in three ways:
 
-Invoke it in any Claude Code session:
+### 1. Manual subagent invocation
 
-- Type **`/qa`** in Claude Code (slash command installed by the install script)
-- Ask Claude to **"review your last output using the reviewer agent"**
-- Or set up auto-review (see below) so it triggers automatically on large outputs
+Ask Claude Code to use the reviewer directly:
 
-The reviewer runs in a **separate context** from the generating agent, which is key — it doesn't share the same blind spots.
+```text
+Use the reviewer agent to review your last output
+```
 
-### Agent memory
+Target a specific concern:
 
-After each review, the reviewer updates `~/.claude/agent-memory/reviewer/MEMORY.md`. Only errors that are **systematic** (likely to recur), **silent** (would have gone unnoticed), and **substantive** (affect correctness) get logged.
+```text
+Use the reviewer agent, focus on duplicate detection and JSON validity
+```
 
-Before each review, the memory is automatically loaded into the reviewer's context. This creates a feedback loop: catch error → log it → check for it next time.
+Review a file:
 
-Memory is scoped to **user level** by default (`memory: user` in the frontmatter), meaning the reviewer shares a single memory across all your projects. Errors caught in one project inform reviews in every other project. If you'd prefer project-scoped memory instead, change `memory: user` to `memory: project` in `agents/reviewer.md` — see the [Claude Code subagent memory docs](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory) for details.
+```text
+Use the reviewer agent to check output.json for structural issues and hallucinations
+```
 
-**Important:** Periodically curate the memory yourself — consolidate recurring patterns, delete false positives, keep it under 200 lines. The loop only works if the data is clean.
+### 2. Slash command
+
+If the skill is installed, use:
+
+```text
+/qa
+```
+
+This tells Claude Code to invoke the reviewer subagent on the latest output.
+
+### 3. Prompted review via CLAUDE.md
+
+You can add the supplied claude-md-snippet.md section to your ~/.claude/CLAUDE.md. This encourages Claude Code to run a lightweight self-check on structured outputs and escalate to the reviewer for higher-risk outputs.
+
+## Agent memory
+
+After each review, the reviewer updates its Claude Code memory with significant findings. Only errors that are **systematic** (likely to recur), **silent** (would have gone unnoticed), and **substantive** (affect correctness) get logged.
+
+Before each review, that memory is automatically loaded into the reviewer's context. This creates a feedback loop: catch error -> log it -> check for it next time.
+
+Memory is scoped at the **user level** (`memory: user` in the frontmatter). In practice, that gives the reviewer one persistent Claude Code memory area across your work, but it does **not** force everything into one monolithic log. You can keep separate memory files for different projects or topics inside that area, with `MEMORY.md` acting as a short index and cross-project pattern summary. This preserves global learning while still keeping project-specific notes separate. See the [Claude Code subagent memory docs](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory) for details.
+
+**Important:** Periodically curate the memory yourself — consolidate recurring patterns, delete false positives, keep it concise. The loop only works if the data is clean.
 
 ### Permissions & safety
 
@@ -87,28 +125,6 @@ This blocks edits inside any working directory while leaving `~/.claude/` (where
 ### Auto-review (optional)
 
 The `claude-md-snippet.md` includes an optional instruction that triggers the reviewer automatically when output meets any of four criteria: longer than 50 lines, contains structured data, contains numbered lists with more than 10 items, or involves data from external sources. Remove or adjust these if you find them too aggressive. Note: this is a prompted protocol, not a guaranteed hook — the model may skip it on short or simple responses.
-
-## Usage examples
-
-The reviewer runs in the background and reports back when done.
-
-General review:
-
-```text
-Review your last output using the reviewer agent
-```
-
-Target a specific concern:
-
-```text
-Use the reviewer agent — focus on duplicate detection and JSON validity
-```
-
-Review a file:
-
-```text
-Use the reviewer agent to check output.json for structural issues and hallucinations
-```
 
 ## Customization
 
