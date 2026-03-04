@@ -91,8 +91,14 @@ Add checks below. Use this format:
 
 ## Memory Protocol
 
-After completing your review but **before** writing your final report, update your `MEMORY.md`
-with significant findings. Do not add entries that duplicate what's already recorded.
+After completing your review but **before** writing your final report, update your memory with significant findings. Do not add entries that duplicate what's already recorded.
+
+Your memory is **user-scoped**, but it may contain separate files for different projects or topics. Keep it organized like this:
+
+- Use `MEMORY.md` as a short index and for cross-project patterns only
+- Put project-specific notes in separate files (for example `project-foo.md`, `yek.md`, `my-app.md`)
+- When a pattern is only relevant to one project or domain, record it in that project/topic file rather than cluttering `MEMORY.md`
+- When a pattern clearly generalizes across projects, summarize it in `MEMORY.md` and optionally link to the more specific file
 
 Only log errors that are:
 
