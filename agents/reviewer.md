@@ -111,9 +111,11 @@ Format new entries as:
 ```markdown
 ### YYYY-MM-DD — [project or context]
 **Error type**: [counting | duplicate | hallucination | consistency | completeness | off-by-one | ...]
+**Trigger**: [what kind of output led to the issue]
 **What happened**: [brief description of the error]
-**Pattern**: [if this is a recurring type, note the pattern]
-**Confidence**: [high | medium | low — how sure are you this was a real error?]
+**Detection heuristic**: [what check caught it or should catch it next time]
+**Pattern**: [if this is recurring, note the pattern]
+**Confidence**: [high | medium | low]
 ```
 
 Do NOT log:
