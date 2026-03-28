@@ -84,7 +84,6 @@ echo "Installed globally to ~/.claude/:"
 echo "  - reviewer subagent"
 echo "  - /qa skill"
 echo ""
-echo "Automatic reviewing now uses project-level hooks, not a CLAUDE.md snippet."
 echo "To enable automatic review in a project:"
 echo "  1. Copy .claude/settings.json into that project's .claude/ directory"
 echo "  2. Copy .claude/hooks/protect-files.sh into that project's .claude/hooks/ directory"
@@ -100,4 +99,4 @@ if [[ "$ALL_LINKED" != true ]]; then
     warn "One or more files were copied instead of symlinked. Re-run install.sh after pulling updates to keep them current."
 fi
 
-echo "Curate reviewer memory periodically to consolidate patterns and remove false positives!"
+echo "The reviewer self-curates its memory. Check ~/.claude/agent-memory/reviewer/MEMORY.md occasionally to remove stale heuristics."
