@@ -155,9 +155,9 @@ Review a file:
 Use the reviewer agent to check output.json for structural issues and hallucinations
 ```
 
-### 2. Slash command
+### Slash command
 
-If the skill is installed, use:
+If the `/qa` skill is installed, use:
 
 ```text
 /qa
