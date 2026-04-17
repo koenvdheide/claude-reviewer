@@ -17,6 +17,27 @@ What makes this more useful than a one-off review prompt is the combination of:
 - automatic hook-based gating for risky outputs
 - persistent reviewer memory for recurring failure patterns
 
+## Track record
+
+Measured across **1,500+ reviewer invocations** spanning 30+ projects (including but not limited to: code review & programming, bug hunting, writing architecture/design/specs documents, academic archival research and writing):
+
+- **~86% of reviews surfaced at least one real issue**
+- **~2.3 confirmed errors per review** on average, plus ~2.7 verification flags for human follow-up
+- **~5–15% estimated false positive rate** on confirmed errors (reviewer self-tags 25% of findings as low-confidence and main session identifies practically all remaining false positives)
+
+Most common catches:
+
+| Category | Share of confirmed errors | Typical example |
+| --- | --- | --- |
+| Consistency | ~30% | Summary says "3 categories", details contain 4 |
+| Counting & arithmetic | ~10% | "Top 10" list contains 9 items; scalar count diverges from its corresponding list |
+| Completeness | ~10% | Promised section never appears; JSON array cut off mid-object |
+| Stale references | ~5% | Docstrings/comments describing old behavior after a refactor |
+| Logic errors | ~5% | Boolean OR masking a missing field check |
+| Hallucinations / factual errors | ~2% | Missing or fabricated citations, invented claims, incorrect function call |
+
+The reviewer's highest-value role is catching **silent drift** — the kind of error that ships because it looks internally consistent at a glance.
+
 ## What's included
 
 | File | Purpose |
