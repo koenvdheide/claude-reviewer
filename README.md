@@ -36,7 +36,7 @@ Most common catches:
 | Logic errors | ~5% | Boolean OR masking a missing field check |
 | Hallucinations / factual errors | ~2% | Missing or fabricated citations, invented claims, incorrect function call |
 
-The reviewer's highest-value role is catching **silent drift** — the kind of error that ships because it looks internally consistent at a glance.
+On occasions it has also caught issues severe enough to scrap a plan rather than patch it: hallucinated dependencies (tools or APIs that don't exist), load-bearing assumptions that turn out to be false, invariant violations at architectural boundaries, over-engineered designs that dissolve under a simpler framing, and premise inversions where one misread claim cascades into every downstream conclusion.
 
 ## What's included
 
