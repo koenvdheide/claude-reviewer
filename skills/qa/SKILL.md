@@ -1,6 +1,7 @@
 ---
 name: qa
-description: QA-review generated output for errors using the reviewer subagent
+description: QA-review the last output using the reviewer subagent
+disable-model-invocation: true
 ---
 
-Use the reviewer agent to review your last output.
+Use the reviewer subagent to QA-review your last output for errors.
