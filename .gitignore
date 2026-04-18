@@ -2,3 +2,6 @@
 .DS_Store
 Thumbs.db
 .claude/settings.local.json
+
+# Transient brainstorming / design artifacts
+docs/superpowers/
