@@ -1,6 +1,6 @@
 # claude-reviewer
 
-A Claude Code reviewer package that automatically QA-checks risky outputs through **hooks** and also provides a reusable `reviewer` subagent plus `/qa` skill for manual review.
+A Claude Code plugin that provides a `reviewer` subagent and `/claude-reviewer:qa` skill for manual QA review of AI-generated output.
 
 It is built to catch concrete correctness failures such as:
 
@@ -14,7 +14,6 @@ It is built to catch concrete correctness failures such as:
 What makes this more useful than a one-off review prompt is the combination of:
 
 - a dedicated reviewer subagent running in its own context
-- automatic hook-based gating for risky outputs
 - persistent reviewer memory for recurring failure patterns
 
 ## Track record
@@ -36,96 +35,48 @@ Most common catches:
 | Logic errors | ~5% | Boolean OR masking a missing field check |
 | Hallucinations / factual errors | ~2% | Missing or fabricated citations, invented claims, incorrect function call |
 
-On occasions it has also caught issues severe enough to scrap a plan rather than patch it: hallucinated dependencies (tools or APIs that don't exist), load-bearing assumptions that turn out to be false, invariant violations at architectural boundaries, over-engineered designs that dissolve under a simpler framing, and premise inversions where one misread claim cascades into every downstream conclusion.
+On occasions it has also caught issues severe enough to scrap a plan rather than patch it: fabricated dependencies (tools or APIs that don't exist), load-bearing assumptions that turn out to be false, invariant violations at architectural boundaries, over-engineered designs that dissolve under a simpler framing, and premise inversions where one misread claim cascades into every downstream conclusion.
 
 ## What's included
 
 | File | Purpose |
 | --- | --- |
+| `.claude-plugin/plugin.json` | Plugin manifest |
 | `agents/reviewer.md` | Reviewer subagent definition |
-| `skills/qa/SKILL.md` | `/qa` skill that invokes the reviewer |
-| `.claude/settings.json` | Example project-level hook configuration for automatic review |
-| `.claude/hooks/protect-files.sh` | Example `PreToolUse` guard for protected files |
-| `examples/domain-specific.md` | Example domain-specific review checks |
-| `install.sh` | Installer for macOS / Linux / WSL |
-| `install.ps1` | Installer for Windows (PowerShell) |
-
+| `skills/qa/SKILL.md` | `/claude-reviewer:qa` skill that invokes the reviewer |
 
 ## Installation
 
-### macOS / Linux / WSL
-
-```bash
-git clone https://github.com/koenvdheide/claude-reviewer.git
-cd claude-reviewer
-chmod +x install.sh
-./install.sh
+```text
+/plugin install claude-reviewer@<marketplace-name>
 ```
 
-### Windows (PowerShell)
-
-```powershell
-git clone https://github.com/koenvdheide/claude-reviewer.git
-cd claude-reviewer
-powershell -ExecutionPolicy Bypass -File install.ps1
-```
-
-> **Note:** Symlink creation on Windows may require Developer Mode (Settings → Privacy & Security → For Developers) or an elevated PowerShell session with administrator privileges.
-If symlink creation fails, the installer falls back to copying files instead.
-If files were copied rather than linked, re-run the install script after pulling updates to keep them current.
->
-> On Windows, `~/.claude/` maps to `%USERPROFILE%\.claude\`.
+Once the plugin is accepted into the [Anthropic plugin marketplace](https://github.com/anthropics/claude-code), install with the command above (substituting the correct marketplace name).
 
 > **Note:** `jq` is recommended for JSON validation
 > (`brew install jq` / `apt install jq` / `winget install jqlang.jq`).
 > If unavailable, the reviewer degrades gracefully to manual inspection with lower confidence.
 
-## How it works
+## Local development
 
-### Manual review
+To iterate on this repo without publishing, clone it and load it directly:
+
+```bash
+git clone https://github.com/koenvdheide/claude-reviewer.git
+claude --plugin-dir ./claude-reviewer
+```
+
+Marketplace plugins are copied into `~/.claude/plugins/cache`, so editing a published plugin's source does not update the installed version. `--plugin-dir` loads the plugin from the source path for the current session.
+
+## How it works
 
 You can invoke the reviewer directly in any Claude Code session:
 
-- Type **`/qa`** in Claude Code
+- Type **`/claude-reviewer:qa`** in Claude Code
 - Ask Claude to **"use the reviewer subagent to review your last output"**
 - Ask Claude to review a specific file, such as `output.json`
 
 The reviewer runs in a **separate context** from the generating agent, which helps avoid shared blind spots.
-
-### Automatic review through hooks
-
-Automatic review is configured at the **project level** through `.claude/settings.json` and companion hook scripts.
-
-The included example hook configuration does three things:
-
-1. **Selective Stop gate**
-   - only reviews answers that look risky enough to justify QA
-   - examples: structured-data blocks, long inventories, exact count claims, citations, or generated output files
-   - blocks stopping only for **confirmed concrete errors**, not for softer verification flags
-
-2. **PostToolUse review after `Edit` / `Write`**
-   - automatically checks newly written artifacts for structural failures, stale totals, duplicates, numbering drift, and contradictions
-
-3. **PreToolUse protection for sensitive paths**
-   - blocks edits to protected files such as `.env`, `.git/*`, or Claude settings files
-
-## Hook setup
-
-The repo includes a sample project-level hook configuration in:
-
-- `.claude/settings.json`
-- `.claude/hooks/protect-files.sh`
-
-To use automatic review in a project:
-
-1. copy or adapt those files into your project's `.claude/` directory
-2. make the shell hook executable on macOS / Linux / WSL:
-
-```bash
-chmod +x .claude/hooks/protect-files.sh
-```
-
-3. adjust the protected-path rules and hook prompts to match your workflow if needed
 
 ## Reviewer memory
 
@@ -153,9 +104,6 @@ The reviewer subagent intentionally does **not** have Claude `Edit` or `Write` t
 
 This means it is primarily read-only for project work, while still being able to maintain its own subagent memory.
 
-If you want stronger repo-wide protection, keep the included `PreToolUse` hook enabled. That protects the whole workflow, not just the reviewer subagent.
-
-
 ## Usage examples
 
 General review:
@@ -178,21 +126,17 @@ Use the reviewer agent to check output.json for structural issues and hallucinat
 
 ### Slash command
 
-If the `/qa` skill is installed, use:
+If the `/claude-reviewer:qa` skill is installed, use:
 
 ```text
-/qa
+/claude-reviewer:qa
 ```
 
 ## Customization
 
 ### Adding domain-specific checks
 
-The generic checklist misses domain-specific issues. See `examples/domain-specific.md` for inspiration, then add your own checks to the `Domain-Specific Checks` section of `agents/reviewer.md`.
-
-### Tuning automatic gating
-
-The included `Stop` hook is intentionally selective. Tighten it if you only want review for large structured deliverables, or loosen it if you want more aggressive QA coverage.
+The generic checklist misses domain-specific issues. Add your own checks to the `Domain-Specific Checks` section of `agents/reviewer.md`.
 
 ### Using a different model
 
@@ -200,29 +144,16 @@ The reviewer works best when run on a different model than the one that generate
 
 ## Uninstall
 
-**macOS / Linux / WSL:**
-
-```bash
-cd claude-reviewer
-./install.sh --uninstall
+```text
+/plugin uninstall claude-reviewer
 ```
-
-**Windows:**
-
-```powershell
-cd claude-reviewer
-powershell -ExecutionPolicy Bypass -File install.ps1 -Uninstall
-```
-
-This removes the installed reviewer subagent and `/qa` skill from `~/.claude/`.
-It does **not** remove any project-level hook files you copied into `.claude/` directories.
 
 ## Troubleshooting
 
-- **Verify the subagent loaded**: run `/agents` in Claude Code and confirm `reviewer` appears.
-- **Verify the skill loaded**: run `/qa`.
+- **Verify the plugin loaded**: run `/plugin list` and confirm `claude-reviewer` appears.
+- **Verify the subagent loaded**: run `/agents` and confirm `reviewer` appears.
+- **Verify the skill loaded**: run `/claude-reviewer:qa` — it should delegate to the reviewer subagent.
 - **Check permissions**: run `/permissions` to confirm tool access.
-- **Inspect hooks**: confirm the project contains `.claude/settings.json` and any referenced hook scripts.
 - **Health check**: run `/doctor` for installation diagnostics.
 
 ## Contributing
