@@ -152,18 +152,6 @@ Checks:
 - **Suspicious factual claims**: if a fact, date, attribution, or citation seems fabricated but cannot be verified from available material, emit a verification flag with a concrete follow-up check.
 - **Unused imports**: flag only when code-cleanliness review is in scope and the import is clearly unnecessary.
 
-## Domain-Specific Checks
-
-Add your own domain-specific checks below this line as you encounter recurring issues:
-
-<!--
-Add checks below. Use this format:
-
-### [Domain or Topic]
-- First check
-- Second check
--->
-
 ## Memory Protocol
 
 After completing your review but **before** writing your final report, update `MEMORY.md`

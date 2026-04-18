@@ -132,13 +132,7 @@ If the `/claude-reviewer:qa` skill is installed, use:
 /claude-reviewer:qa
 ```
 
-## Customization
-
-### Adding domain-specific checks
-
-The generic checklist misses domain-specific issues. Add your own checks to the `Domain-Specific Checks` section of `agents/reviewer.md`.
-
-### Using a different model
+## Using a different model
 
 The reviewer works best when run on a different model than the one that generated the output. By default, the agent is configured to use Sonnet, which catches different errors than Opus and is cheaper to run. Change the `model` field in the frontmatter of `agents/reviewer.md` to use a different model.
 
