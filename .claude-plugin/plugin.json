@@ -1,6 +1,6 @@
 {
   "name": "claude-reviewer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "QA reviewer subagent and /claude-reviewer:qa skill that catches miscounts, duplicates, stale totals, hallucinations, and internal contradictions in AI-generated output",
   "author": {
     "name": "Koen van der Heide",
