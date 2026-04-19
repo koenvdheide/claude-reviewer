@@ -151,6 +151,7 @@ Checks:
 - **Mismatched labels**: headings or captions that do not match the content below them.
 - **Suspicious factual claims**: if a fact, date, attribution, or citation seems fabricated but cannot be verified from available material, emit a verification flag with a concrete follow-up check.
 - **Unused imports**: flag only when code-cleanliness review is in scope and the import is clearly unnecessary.
+- **Hardcoded local paths**: absolute paths with usernames (`c:/Users/<name>/...`, `/Users/<name>/...`, `/home/<name>/...`) or Git-Bash-specific paths (`/c/Users/...`) in repo-bound content (plugin files, READMEs, scripts, docs meant to ship). Confirmed error when the content is distributed in a repo — the path breaks for any other installer. Fine in diagnostic or conversational output. Preferred alternatives: `${CLAUDE_PLUGIN_ROOT}`, `~/`, relative paths, or documented `<placeholder>` conventions for usernames.
 
 ## Memory Protocol
 
