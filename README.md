@@ -143,6 +143,23 @@ Request machine-readable output:
 
 Returns a single JSON object with `confirmed_errors`, `verification_flags`, `summary`, and an optional `error` field. See the reviewer agent's `Output Format → JSON mode` section for the full shape.
 
+## Example memory snapshot
+
+[`docs/examples/MEMORY.snapshot.md`](docs/examples/MEMORY.snapshot.md) is a frozen copy of the reviewer agent's own curated `MEMORY.md` after several months of real use — a sample of what generalizable detection heuristics look like once the feature has been running.
+
+> **Snapshot, not starter kit.** Do NOT copy this file into your own `agent-memory/` directory. The heuristics are domain-biased toward the author's projects and will prime your reviewer with irrelevant patterns. Start with an empty `MEMORY.md` and let the reviewer curate its own.
+
+### How the reviewer curates memory
+
+The reviewer writes to a single `MEMORY.md` in its agent-memory directory after each review, following rules enforced by its own prompt (see [`agents/reviewer.md`](agents/reviewer.md) → "Memory Protocol"):
+
+- **Log only systematic + silent + actionable heuristics.** A heuristic earns a line if (a) the pattern will recur in other projects, (b) it would go unnoticed without explicit review, and (c) the check fits in one sentence. Project-specific findings, style preferences, and already-covered heuristics are excluded.
+- **One bullet per heuristic.** Format: `- **[pattern name]**: [one-sentence detection heuristic]`. No error types, dates, project names, or multi-line descriptions — the heuristic stands alone.
+- **Grouped under Review Checklist headings.** Entries live under the 7 top-level sections (Counting and Totals, Duplicate Detection, References, IDs, and Numbering, Structure and Syntax, Internal Consistency, Completeness, Common AI Slipups).
+- **Hard cap: 500 lines.** Before adding, the agent counts the file. If adding would exceed 500, it first deletes the entry most similar to another (consolidating near-duplicates) or the entry that is least general. If nothing can be removed without losing value, the new entry is not added.
+
+Net effect: memory grows toward a tight, high-signal catalog of cross-project AI-error patterns rather than a log of past reviews.
+
 ## Using a different model
 
 The reviewer works best when run on a different model than the one that generated the output. By default, the agent is configured to use Sonnet, which catches different errors than Opus and is cheaper to run. Change the `model` field in the frontmatter of `agents/reviewer.md` to use a different model.
