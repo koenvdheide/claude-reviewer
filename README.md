@@ -47,11 +47,20 @@ On occasions it has also caught issues severe enough to scrap a plan rather than
 
 ## Installation
 
+Via the [`review-plugins`](https://github.com/koenvdheide/review-plugins) marketplace (recommended):
+
+```text
+/plugin marketplace add koenvdheide/review-plugins
+/plugin install claude-reviewer@review-plugins
+```
+
+Refresh later with `/plugin marketplace update review-plugins`.
+
+Or from any other marketplace that lists this plugin:
+
 ```text
 /plugin install claude-reviewer@<marketplace-name>
 ```
-
-Once the plugin is accepted into the [Anthropic plugin marketplace](https://github.com/anthropics/claude-code), install with the command above (substituting the correct marketplace name).
 
 > **Note:** `jq` is recommended for JSON validation
 > (`brew install jq` / `apt install jq` / `winget install jqlang.jq`).
