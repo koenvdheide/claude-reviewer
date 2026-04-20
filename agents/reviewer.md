@@ -49,7 +49,7 @@ Use this section whenever the output contains lists, totals, rankings, grouped i
 Checks:
 - Recount all enumerated items.
 - Compare every stated total against the actual count.
-- Check subtotals against parent totals.
+- Check subtotals against parent totals; if a grand total is stated, sum all subtotals and verify they equal it.
 - Check that inclusive / exclusive ranges are handled correctly.
 - Check that “top N”, “all”, “none”, and similar claims match the actual content.
 - Watch for stale totals after edits.
@@ -68,6 +68,7 @@ Checks:
 - Flag near-duplicates only as verification flags unless you can show they are unintended duplicates.
 - Check repeated IDs, repeated rows, repeated list items, repeated headings, and repeated objects.
 - Check whether the same entity appears twice under different labels when that can be demonstrated from the material itself.
+- When IDs span multiple files, batches, or sections, verify uniqueness across the full set, not just within each group.
 
 Examples of confirmed errors:
 - The same ID appears twice in a list that requires uniqueness.
@@ -85,6 +86,7 @@ Checks:
 - Check that IDs are unique when uniqueness is expected.
 - Check that cross-references use the correct target.
 - Check that labels, captions, or examples match the item they refer to.
+- After any file rename or move, grep for the old path string across documentation, configuration, and code.
 
 Examples of confirmed errors:
 - “See section 4” but no section 4 exists.
@@ -118,6 +120,14 @@ Checks:
 - Flag terminology inconsistency only when it creates a concrete ambiguity or contradiction about entity identity, schema meaning, or field semantics.
 - Check that examples do not contradict definitions.
 - Check that summaries match the detailed content below them.
+- When frontmatter is updated, verify the body text reflects the same change; frontmatter-only updates routinely leave stale body content.
+
+When reviewing a summary of a source document (review, audit, log, spec), also apply these **summary-fidelity** checks:
+
+- Flag first-person pronouns ("my", "our", "I think") in summaries of third-party sources — they signal meta-commentary absent from the source.
+- Flag verification-completion claims ("verified during QA", "all citations check out") appearing in a summary — these are asserted rather than evidenced.
+- If the source uses "may", "can", "might", "mostly", or "often", verify the summary preserves the qualifier; dropping it converts hedged judgment into a definitive assertion (strength amplification).
+- If the source says "X or Y", flag a summary that drops one branch — "X" alone is misleading even when technically non-false.
 
 Examples of confirmed errors:
 - A summary says “3 categories” while the details contain 4.
@@ -152,6 +162,9 @@ Checks:
 - **Suspicious factual claims**: if a fact, date, attribution, or citation seems fabricated but cannot be verified from available material, emit a verification flag with a concrete follow-up check.
 - **Unused imports**: flag only when code-cleanliness review is in scope and the import is clearly unnecessary.
 - **Hardcoded local paths**: absolute paths with usernames (`c:/Users/<name>/...`, `/Users/<name>/...`, `/home/<name>/...`) or Git-Bash-specific paths (`/c/Users/...`) in repo-bound content (plugin files, READMEs, scripts, docs meant to ship). Confirmed error when the content is distributed in a repo — the path breaks for any other installer. Fine in diagnostic or conversational output. Preferred alternatives: `${CLAUDE_PLUGIN_ROOT}`, `~/`, relative paths, or documented `<placeholder>` conventions for usernames.
+- **Fabricated quotation**: when output presents a quoted string from a file (field value, method name, error message, config key), verify the quote appears verbatim in the file on disk.
+- **Claimed unavailability without search**: when output states a file is missing or unavailable, glob the actual directory before accepting — claimed-missing files are frequently present.
+- **"Design choice" overclaim**: when output labels something "intentional" or "by design", read the actual comment or source — if a comment or commit note explicitly contradicts the claim (describes a workaround, `TODO`, or fix-later), confirm the error; if no supporting comment is found either way, emit a verification flag.
 
 ## Memory Protocol
 
