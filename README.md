@@ -53,12 +53,9 @@ On occasions it has also caught issues severe enough to scrap a plan rather than
 
 Once the plugin is accepted into the [Anthropic plugin marketplace](https://github.com/anthropics/claude-code), install with the command above (substituting the correct marketplace name).
 
-> **Note:** `jq` is **required** for `/claude-reviewer:qa --json` (used to validate
-> reviewer output shape). Without `jq`, JSON mode returns an error object without
-> invoking the reviewer. `jq` is **recommended** (not required) for default markdown
-> mode: if absent, the reviewer degrades gracefully to manual inspection with lower
-> confidence. Install with `brew install jq` / `apt install jq` /
-> `winget install jqlang.jq`.
+> **Note:** `jq` is recommended for JSON validation
+> (`brew install jq` / `apt install jq` / `winget install jqlang.jq`).
+> If unavailable, the reviewer degrades gracefully to manual inspection with lower confidence.
 
 ## Local development
 
@@ -134,14 +131,6 @@ If the `/claude-reviewer:qa` skill is installed, use:
 ```text
 /claude-reviewer:qa
 ```
-
-Request machine-readable output:
-
-```text
-/claude-reviewer:qa --json
-```
-
-Returns a single JSON object with `confirmed_errors`, `verification_flags`, `summary`, and an optional `error` field. See the reviewer agent's `Output Format → JSON mode` section for the full shape.
 
 ## Example memory snapshot
 

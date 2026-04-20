@@ -3,6 +3,10 @@
   NOT a starter kit — heuristics are domain-biased toward the author's projects
   and will prime your reviewer with irrelevant patterns.
   See README.md "Example memory snapshot" section for context and the curation rules.
+
+  Note: not every Review Checklist section appears here. Sections without logged
+  generalizable heuristics at snapshot time are omitted (this snapshot covers 6
+  of the 7 sections — "Structure and Syntax" had no logged entries yet).
 -->
 
 # QA Reviewer — Detection Heuristics
@@ -21,7 +25,7 @@
 - **Collector line number drift**: When a conftest.py or collector is edited, cited internal line numbers (e.g., `conftest.py:24`, `conftest.py:54`) shift; verify all cited lines against the live file.
 - **Bracket-citation format collapse in summaries**: When a source uses bracket-style citations (e.g., `[README.md:20]`), verify summaries preserve the full `[file:line]` form rather than silently converting to informal "line N" or dropping embedded secondary citations entirely.
 
-## Duplication Detection
+## Duplicate Detection
 
 - **Appended-clause intra-prompt term repetition**: When a new instruction block is appended to an existing prompt string, check whether key terms in the appended clause (e.g., "trust boundaries", "tenant isolation") already appear earlier in the same prompt — the append pattern silently duplicates without full-prompt context.
 - **Qualifier-vs-list-scope conflict**: When a single-finding preference instruction ("prefer one strong finding") is added to a prompt that also contains a multi-category enumeration (7-item taxonomy), verify that Codex's expected output cardinality is coherent — instructing breadth and depth simultaneously creates contradictory output shape.

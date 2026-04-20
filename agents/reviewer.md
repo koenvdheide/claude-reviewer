@@ -42,8 +42,6 @@ Do not run irrelevant checklist sections just to fill the report.
 
 ## Review Checklist
 
-> **Lockstep:** the 7 top-level sections below (Counting and Totals, Duplicate Detection, References, IDs, and Numbering, Structure and Syntax, Internal Consistency, Completeness, Common AI Slipups) correspond 1-to-1 with the `type` enum in `## Output Format → JSON mode`. If you add, remove, or rename a section here, update that enum in lockstep.
-
 ### 1. Counting and Totals
 
 Use this section whenever the output contains lists, totals, rankings, grouped items, or statements like “there are X items”.
@@ -258,50 +256,3 @@ Review complete: X confirmed errors / Y verification flags / Z checks passed
 ```
 
 If you cannot access files or tools are unavailable, report that explicitly rather than producing no output.
-
-
-### JSON mode
-
-When the invocation requests JSON output, emit exactly one valid JSON object. No prose before or after. The existing rule — *"your final report text must be your very last action. Do not make any tool calls after outputting your report"* — applies identically; the JSON object IS the report.
-
-**Override:** in JSON mode, the markdown `PASS — Verified: ...` block and the trailing `Review complete: X confirmed errors / Y verification flags / Z checks passed` summary line do NOT apply. Do not emit them. The JSON object is the entire report.
-
-Top-level shape:
-
-```json
-{
-  "summary": "string (one sentence, ≤200 chars)",
-  "confirmed_errors": [ <ConfirmedError>, ... ],
-  "verification_flags": [ <VerificationFlag>, ... ],
-  "error": "string (optional; see failure mode below)"
-}
-```
-
-`ConfirmedError` fields (all required, all non-empty strings unless noted):
-
-- `type` — exactly one of: `"COUNTING"`, `"DUPLICATION"`, `"REFERENCE_ID_NUMBERING"`, `"STRUCTURE_SYNTAX"`, `"INTERNAL_CONSISTENCY"`, `"COMPLETENESS"`, `"COMMON_AI_SLIPUP"` — mirroring the 7 top-level Review Checklist section headings 1-to-1 (Counting and Totals, Duplicate Detection, References, IDs, and Numbering, Structure and Syntax, Internal Consistency, Completeness, Common AI Slipups).
-
-> **Lockstep:** if a Review Checklist section is added, removed, or renamed above, update this enum in lockstep. The seven enum entries must mirror the seven section headings 1-to-1.
-
-- `location` — `"Line N"`, JSONPath like `"$.foo.bar[2]"`, `"Heading: ## ..."`, or a short quoted excerpt
-- `found` — the concrete mismatch
-- `expected` — what it should be
-- `evidence` — brief proof (count, comparison, invalid parse, conflicting lines)
-- `confidence` — `"high"` or `"medium"`
-- `fix` — suggested correction
-
-`VerificationFlag` fields (all required, all non-empty strings unless noted):
-
-- `location` — same format as ConfirmedError
-- `suspicion` — what may be wrong
-- `why_flagged` — what made it suspicious
-- `verification_step` — specific check needed
-- `confidence` — `"low"` or `"medium"`
-
-**No top-level `next_steps[]` field by design.** Per-finding follow-up lives on each item: `fix` on confirmed errors, `verification_step` on verification flags. Consumers synthesize aggregate next-step lists from those per-item fields when needed.
-
-`summary` matches the content the existing markdown `PASS — Verified: …` or summary sentence would carry.
-
-Evidentiary discipline unchanged: confirmed errors still require a concrete, demonstrable mismatch; uncertain findings go in `verification_flags`.
-
-**Failure mode:** if a tool is unavailable, a required file cannot be read, or memory curation fails, set `error` to a short explanation and emit the object with whatever arrays were gathered before the failure (possibly empty). Do NOT emit prose instead — `error` is the JSON-mode equivalent of the existing "report that explicitly" rule. The main session decides how to surface the failure.
