@@ -1,6 +1,6 @@
 # claude-reviewer
 
-A Claude Code plugin that provides a `reviewer` subagent and `/claude-reviewer:qa` skill for manual QA review of AI-generated output.
+A Claude Code plugin that provides a `reviewer` subagent and `/qa` skill for manual QA review of AI-generated output.
 
 It is built to catch concrete correctness failures such as:
 
@@ -43,7 +43,7 @@ On occasions it has also caught issues severe enough to scrap a plan rather than
 | --- | --- |
 | `.claude-plugin/plugin.json` | Plugin manifest |
 | `agents/reviewer.md` | Reviewer subagent definition |
-| `skills/qa/SKILL.md` | `/claude-reviewer:qa` skill that invokes the reviewer |
+| `skills/qa/SKILL.md` | `/qa` skill that invokes the reviewer |
 
 ## Installation
 
@@ -81,7 +81,7 @@ Marketplace plugins are copied into `~/.claude/plugins/cache`, so editing a publ
 
 You can invoke the reviewer directly in any Claude Code session:
 
-- Type **`/claude-reviewer:qa`** in Claude Code
+- Type **`/qa`** in Claude Code
 - Ask Claude to **"use the reviewer subagent to review your last output"**
 - Ask Claude to review a specific file, such as `output.json`
 
@@ -135,10 +135,10 @@ Use the reviewer agent to check output.json for structural issues and hallucinat
 
 ### Slash command
 
-If the `/claude-reviewer:qa` skill is installed, use:
+If the `/qa` skill is installed, use:
 
 ```text
-/claude-reviewer:qa
+/qa
 ```
 
 ## Example memory snapshot
@@ -172,7 +172,7 @@ The reviewer works best when run on a different model than the one that generate
 
 - **Verify the plugin loaded**: run `/plugin list` and confirm `claude-reviewer` appears.
 - **Verify the subagent loaded**: run `/agents` and confirm `reviewer` appears.
-- **Verify the skill loaded**: run `/claude-reviewer:qa` — it should delegate to the reviewer subagent.
+- **Verify the skill loaded**: run `/qa` — it should delegate to the reviewer subagent.
 - **Check permissions**: run `/permissions` to confirm tool access.
 - **Health check**: run `/doctor` for installation diagnostics.
 
