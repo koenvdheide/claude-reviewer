@@ -47,14 +47,14 @@ On occasions it has also caught issues severe enough to scrap a plan rather than
 
 ## Installation
 
-Via the [`review-plugins`](https://github.com/koenvdheide/review-plugins) marketplace (recommended):
+Via the [`agent-tools`](https://github.com/koenvdheide/agent-tools) marketplace (recommended):
 
 ```text
-/plugin marketplace add koenvdheide/review-plugins
-/plugin install claude-reviewer@review-plugins
+/plugin marketplace add koenvdheide/agent-tools
+/plugin install claude-reviewer@agent-tools
 ```
 
-Refresh later with `/plugin marketplace update review-plugins`.
+Refresh later with `/plugin marketplace update agent-tools`.
 
 Or from any other marketplace that lists this plugin:
 
