@@ -52,9 +52,10 @@ Via the [`agent-tools`](https://github.com/koenvdheide/agent-tools) marketplace 
 ```text
 /plugin marketplace add koenvdheide/agent-tools
 /plugin install claude-reviewer@agent-tools
+/reload-plugins
 ```
 
-Refresh later with `/plugin marketplace update agent-tools`.
+Refresh later with `/plugin marketplace update agent-tools`, then `/reload-plugins`.
 
 Or from any other marketplace that lists this plugin:
 
