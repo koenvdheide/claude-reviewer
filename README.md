@@ -1,6 +1,10 @@
 # claude-reviewer
 
-A Claude Code plugin that provides a `reviewer` subagent and `/claude-reviewer:qa` skill for manual QA review of AI-generated output.
+## Deprecated
+
+This plugin is deprecated. Newer models catch more of their own mistakes than they did when I built it, so a separate QA reviewer pass earns its keep less often. The code is unchanged and it still works, but the `agent-tools` marketplace no longer lists it and I am not developing it further.
+
+A Claude Code plugin with a `reviewer` subagent and a `/claude-reviewer:qa` skill for manual QA review of AI-generated output.
 
 It is built to catch concrete correctness failures such as:
 
@@ -11,31 +15,10 @@ It is built to catch concrete correctness failures such as:
 - contradictions within the output
 - unsupported additions when source material is available
 
-What makes this more useful than a one-off review prompt is the combination of:
+It adds two things over a one-off review prompt:
 
 - a dedicated reviewer subagent running in its own context
 - persistent reviewer memory for recurring failure patterns
-
-## Track record
-
-Measured across **1,500+ reviewer invocations** spanning 30+ projects (including but not limited to: code review & programming, bug hunting, writing architecture/design/specs documents, academic archival research and writing):
-
-- **~86% of reviews surfaced at least one real issue**
-- **~2.3 confirmed errors per review** on average, plus ~2.7 verification flags for human follow-up
-- **~5–15% estimated false positive rate** on confirmed errors (reviewer self-tags 25% of findings as low-confidence and main session identifies practically all remaining false positives)
-
-Most common catches:
-
-| Category | Share of confirmed errors | Typical example |
-| --- | --- | --- |
-| Consistency | ~30% | Summary says "3 categories", details contain 4 |
-| Counting & arithmetic | ~10% | "Top 10" list contains 9 items; scalar count diverges from its corresponding list |
-| Completeness | ~10% | Promised section never appears; JSON array cut off mid-object |
-| Stale references | ~5% | Docstrings/comments describing old behavior after a refactor |
-| Logic errors | ~5% | Boolean OR masking a missing field check |
-| Hallucinations / factual errors | ~2% | Missing or fabricated citations, invented claims, incorrect function call |
-
-On occasions it has also caught issues severe enough to scrap a plan rather than patch it: fabricated dependencies (tools or APIs that don't exist), load-bearing assumptions that turn out to be false, invariant violations at architectural boundaries, over-engineered designs that dissolve under a simpler framing, and premise inversions where one misread claim cascades into every downstream conclusion.
 
 ## What's included
 
@@ -47,25 +30,15 @@ On occasions it has also caught issues severe enough to scrap a plan rather than
 
 ## Installation
 
-Via the [`agent-tools`](https://github.com/koenvdheide/agent-tools) marketplace (recommended):
-
-```text
-/plugin marketplace add koenvdheide/agent-tools
-/plugin install claude-reviewer@agent-tools
-/reload-plugins
-```
-
-Refresh later with `/plugin marketplace update agent-tools`, then `/reload-plugins`.
-
-Or from any other marketplace that lists this plugin:
+The `agent-tools` marketplace no longer lists this plugin. It still installs from any marketplace that carries it:
 
 ```text
 /plugin install claude-reviewer@<marketplace-name>
 ```
 
-> **Note:** `jq` is recommended for JSON validation
+> `jq` is recommended for JSON validation
 > (`brew install jq` / `apt install jq` / `winget install jqlang.jq`).
-> If unavailable, the reviewer degrades gracefully to manual inspection with lower confidence.
+> Without it, the reviewer falls back to manual inspection with lower confidence.
 
 ## Local development
 
@@ -82,37 +55,37 @@ Marketplace plugins are copied into `~/.claude/plugins/cache`, so editing a publ
 
 You can invoke the reviewer directly in any Claude Code session:
 
-- Type **`/claude-reviewer:qa`** in Claude Code
-- Ask Claude to **"use the reviewer subagent to review your last output"**
+- Type `/claude-reviewer:qa` in Claude Code
+- Ask Claude to "use the reviewer subagent to review your last output"
 - Ask Claude to review a specific file, such as `output.json`
 
-The reviewer runs in a **separate context** from the generating agent, which helps avoid shared blind spots.
+The reviewer runs in a separate context from the generating agent, which helps avoid shared blind spots.
 
 ## Reviewer memory
 
 The reviewer uses persistent subagent memory.
 
-Only significant recurring patterns should be logged, for example:
+It logs only significant recurring patterns, for example:
 
 - date-range truncation
 - repeated stale totals after list growth
 - citation drift across batched records
 - recurring duplicate-ID reuse patterns
 
-Memory is scoped to **user level** by default (`memory: user` in `agents/reviewer.md`), which means the reviewer shares one memory across all your projects. If you'd prefer project-scoped memory instead, change `memory: user` to `memory: project` in `agents/reviewer.md`.
+Memory is scoped to user level by default (`memory: user` in `agents/reviewer.md`), which means the reviewer shares one memory across all your projects. For project-scoped memory, change `memory: user` to `memory: project` in `agents/reviewer.md`.
 
-The reviewer self-curates its memory — it stores only one-line detection heuristics in a single `MEMORY.md` file (capped at 500 lines), consolidating or removing entries when the budget is exceeded. You can review `~/.claude/agent-memory/reviewer/MEMORY.md` occasionally to remove stale heuristics or add your own.
+The reviewer curates its own memory: it stores one-line detection heuristics in a single `MEMORY.md` file (capped at 500 lines), and consolidates or removes entries when the budget is exceeded. You can review `~/.claude/agent-memory/reviewer/MEMORY.md` occasionally to remove stale heuristics or add your own.
 
 ## Permissions & safety
 
-The reviewer subagent intentionally does **not** have Claude `Edit` or `Write` tools for project files. Its tool access is limited to:
+The reviewer subagent intentionally has no `Edit` or `Write` tools for project files. Its tool access is limited to:
 
 - `Read`
 - `Grep`
 - `Glob`
 - `Bash(jq *)`
 
-This means it is primarily read-only for project work, while still being able to maintain its own subagent memory.
+It is therefore primarily read-only for project work, and can still maintain its own subagent memory.
 
 ## Usage examples
 
@@ -144,24 +117,24 @@ If the `/claude-reviewer:qa` skill is installed, use:
 
 ## Example memory snapshot
 
-[`docs/examples/MEMORY.snapshot.md`](docs/examples/MEMORY.snapshot.md) is a frozen copy of the reviewer agent's own curated `MEMORY.md` after several months of real use — a sample of what generalizable detection heuristics look like once the feature has been running.
+[`docs/examples/MEMORY.snapshot.md`](docs/examples/MEMORY.snapshot.md) is a frozen copy of the reviewer agent's own curated `MEMORY.md` after months of real use, as a sample of what generalisable detection heuristics look like.
 
-> **Snapshot, not starter kit.** Do NOT copy this file into your own `agent-memory/` directory. The heuristics are domain-biased toward the author's projects and will prime your reviewer with irrelevant patterns. Start with an empty `MEMORY.md` and let the reviewer curate its own.
+> Do NOT copy this file into your own `agent-memory/` directory. The heuristics are domain-biased toward the author's projects and will prime your reviewer with irrelevant patterns. Start with an empty `MEMORY.md` and let the reviewer curate its own.
 
 ### How the reviewer curates memory
 
-The reviewer writes to a single `MEMORY.md` in its agent-memory directory after each review, following rules enforced by its own prompt (see [`agents/reviewer.md`](agents/reviewer.md) → "Memory Protocol"):
+The reviewer writes to a single `MEMORY.md` in its agent-memory directory after each review, under rules its own prompt enforces (see [`agents/reviewer.md`](agents/reviewer.md) → "Memory Protocol"):
 
-- **Log only systematic + silent + actionable heuristics.** A heuristic earns a line if (a) the pattern will recur in other projects, (b) it would go unnoticed without explicit review, and (c) the check fits in one sentence. Project-specific findings, style preferences, and already-covered heuristics are excluded.
-- **One bullet per heuristic.** Format: `- **[pattern name]**: [one-sentence detection heuristic]`. No error types, dates, project names, or multi-line descriptions — the heuristic stands alone.
-- **Grouped under Review Checklist headings.** Entries live under the 7 top-level sections (Counting and Totals, Duplicate Detection, References, IDs, and Numbering, Structure and Syntax, Internal Consistency, Completeness, Common AI Slipups).
-- **Hard cap: 500 lines.** Before adding, the agent counts the file. If adding would exceed 500, it first deletes the entry most similar to another (consolidating near-duplicates) or the entry that is least general. If nothing can be removed without losing value, the new entry is not added.
+- A heuristic earns a line if (a) the pattern will recur in other projects, (b) it would go unnoticed without explicit review, and (c) the check fits in one sentence. Project-specific findings, style preferences, and already-covered heuristics are excluded.
+- Each heuristic gets one bullet, formatted `- **[pattern name]**: [one-sentence detection heuristic]`. No error types, dates, project names, or multi-line descriptions; the heuristic stands alone.
+- Entries live under the 7 top-level Review Checklist sections: Counting and Totals; Duplicate Detection; References, IDs, and Numbering; Structure and Syntax; Internal Consistency; Completeness; Common AI Slipups.
+- The hard cap is 500 lines. Before adding, the agent counts the file. If adding would exceed 500, it first deletes the entry most similar to another (consolidating near-duplicates) or the entry that is least general. If nothing can be removed without losing value, the new entry is not added.
 
-Net effect: memory grows toward a tight, high-signal catalog of cross-project AI-error patterns rather than a log of past reviews.
+Net effect: memory grows toward a tight catalogue of AI error patterns that recur across projects.
 
 ## Using a different model
 
-The reviewer works best when run on a different model than the one that generated the output. By default, the agent is configured to use Sonnet, which catches different errors than Opus and is cheaper to run. Change the `model` field in the frontmatter of `agents/reviewer.md` to use a different model.
+The reviewer works best when run on a different model than the one that generated the output. The agent is configured to use Sonnet by default, which catches different errors than Opus and is cheaper to run. Change the `model` field in the frontmatter of `agents/reviewer.md` to use a different model.
 
 ## Uninstall
 
@@ -171,15 +144,15 @@ The reviewer works best when run on a different model than the one that generate
 
 ## Troubleshooting
 
-- **Verify the plugin loaded**: run `/plugin list` and confirm `claude-reviewer` appears.
-- **Verify the subagent loaded**: run `/agents` and confirm `reviewer` appears.
-- **Verify the skill loaded**: run `/claude-reviewer:qa` — it should delegate to the reviewer subagent.
-- **Check permissions**: run `/permissions` to confirm tool access.
-- **Health check**: run `/doctor` for installation diagnostics.
+- Run `/plugin list` and confirm `claude-reviewer` appears.
+- Run `/context` and confirm `reviewer` appears under Custom Agents, or @-mention it as `claude-reviewer:reviewer`.
+- Run `/claude-reviewer:qa`; it should delegate to the reviewer subagent.
+- Run `/permissions` to confirm tool access.
+- Run `/doctor` for installation diagnostics.
 
 ## Contributing
 
-The most valuable contributions are **new review checks** based on real errors you've encountered. If the reviewer missed something, open an issue or PR describing:
+The most valuable contributions are new review checks based on real errors you've encountered. If the reviewer missed something, open an issue or PR describing:
 
 1. What the error was
 2. Why the current checklist didn't catch it
