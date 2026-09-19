@@ -1,8 +1,6 @@
 # claude-reviewer
 
-## Deprecated
-
-This plugin is deprecated. Newer models catch more of their own mistakes than they did when I built it, so a separate QA reviewer pass earns its keep less often. The code is unchanged and it still works, but the `agent-tools` marketplace no longer lists it and I am not developing it further.
+> Deprecated. Newer models catch more of their own mistakes than they did when I built it, so a separate QA reviewer pass earns its keep less often. The code is unchanged and it still works, but the `agent-tools` marketplace no longer lists it and I am not developing it further.
 
 A Claude Code plugin with a `reviewer` subagent and a `/claude-reviewer:qa` skill for manual QA review of AI-generated output.
 
@@ -17,7 +15,7 @@ It is built to catch concrete correctness failures such as:
 
 It adds two things over a one-off review prompt:
 
-- a dedicated reviewer subagent running in its own context
+- a dedicated reviewer subagent running in its own context, which helps avoid shared blind spots
 - persistent reviewer memory for recurring failure patterns
 
 ## What's included
@@ -30,51 +28,45 @@ It adds two things over a one-off review prompt:
 
 ## Installation
 
+> `jq` is recommended for JSON validation
+> (`brew install jq` / `apt install jq` / `winget install jqlang.jq`).
+> Without it, the reviewer falls back to manual inspection with lower confidence.
+
 The `agent-tools` marketplace no longer lists this plugin. It still installs from any marketplace that carries it:
 
 ```text
 /plugin install claude-reviewer@<marketplace-name>
 ```
 
-> `jq` is recommended for JSON validation
-> (`brew install jq` / `apt install jq` / `winget install jqlang.jq`).
-> Without it, the reviewer falls back to manual inspection with lower confidence.
+## Usage
 
-## Local development
+Invoke the reviewer in any Claude Code session:
 
-To iterate on this repo without publishing, clone it and load it directly:
-
-```bash
-git clone https://github.com/koenvdheide/claude-reviewer.git
-claude --plugin-dir ./claude-reviewer
+```text
+/claude-reviewer:qa
 ```
 
-Marketplace plugins are copied into `~/.claude/plugins/cache`, so editing a published plugin's source does not update the installed version. `--plugin-dir` loads the plugin from the source path for the current session.
+Or ask Claude in plain language, which lets you aim the review:
 
-## How it works
-
-You can invoke the reviewer directly in any Claude Code session:
-
-- Type `/claude-reviewer:qa` in Claude Code
-- Ask Claude to "use the reviewer subagent to review your last output"
-- Ask Claude to review a specific file, such as `output.json`
-
-The reviewer runs in a separate context from the generating agent, which helps avoid shared blind spots.
+```text
+Use the reviewer subagent to review your last output
+Use the reviewer subagent, focus on duplicate detection and JSON validity
+Use the reviewer subagent to check output.json for structural issues and hallucinations
+```
 
 ## Reviewer memory
 
-The reviewer uses persistent subagent memory.
+The reviewer keeps persistent subagent memory: a single `MEMORY.md` holding nothing but one-line detection heuristics, grouped under the 7 headings of the reviewer's own Review Checklist and capped at 500 lines. A pattern earns an entry only if it will recur in other projects, would go unnoticed without explicit review, and fits in one sentence. At the cap the reviewer consolidates near-duplicates or drops its least general entry before adding. The full rules are in [`agents/reviewer.md`](agents/reviewer.md) under "Memory Protocol".
 
-It logs only significant recurring patterns, for example:
+Typical entries cover date-range truncation, stale totals after list growth, citation drift across batched records, and duplicate-ID reuse. Each is one bullet, formatted `- **[pattern name]**: [one-sentence detection heuristic]`.
 
-- date-range truncation
-- repeated stale totals after list growth
-- citation drift across batched records
-- recurring duplicate-ID reuse patterns
+Memory is scoped to user level by default (`memory: user` in `agents/reviewer.md`), which means the reviewer shares one memory across all your projects. For project-scoped memory, change `memory: user` to `memory: project` in `agents/reviewer.md`. You can review `~/.claude/agent-memory/reviewer/MEMORY.md` occasionally to remove stale heuristics or add your own.
 
-Memory is scoped to user level by default (`memory: user` in `agents/reviewer.md`), which means the reviewer shares one memory across all your projects. For project-scoped memory, change `memory: user` to `memory: project` in `agents/reviewer.md`.
+### Example memory snapshot
 
-The reviewer curates its own memory: it stores one-line detection heuristics in a single `MEMORY.md` file (capped at 500 lines), and consolidates or removes entries when the budget is exceeded. You can review `~/.claude/agent-memory/reviewer/MEMORY.md` occasionally to remove stale heuristics or add your own.
+[`docs/examples/MEMORY.snapshot.md`](docs/examples/MEMORY.snapshot.md) is a frozen copy of the reviewer agent's own curated `MEMORY.md` after months of real use, as a sample of what generalisable detection heuristics look like.
+
+> Do NOT copy this file into your own `agent-memory/` directory. The heuristics are domain-biased toward the author's projects and will prime your reviewer with irrelevant patterns. Start with an empty `MEMORY.md` and let the reviewer curate its own.
 
 ## Permissions & safety
 
@@ -85,52 +77,7 @@ The reviewer subagent intentionally has no `Edit` or `Write` tools for project f
 - `Glob`
 - `Bash(jq *)`
 
-It is therefore primarily read-only for project work, and can still maintain its own subagent memory.
-
-## Usage examples
-
-General review:
-
-```text
-Use the reviewer agent to review your last output
-```
-
-Target a specific concern:
-
-```text
-Use the reviewer agent, focus on duplicate detection and JSON validity
-```
-
-Review a file:
-
-```text
-Use the reviewer agent to check output.json for structural issues and hallucinations
-```
-
-### Slash command
-
-If the `/claude-reviewer:qa` skill is installed, use:
-
-```text
-/claude-reviewer:qa
-```
-
-## Example memory snapshot
-
-[`docs/examples/MEMORY.snapshot.md`](docs/examples/MEMORY.snapshot.md) is a frozen copy of the reviewer agent's own curated `MEMORY.md` after months of real use, as a sample of what generalisable detection heuristics look like.
-
-> Do NOT copy this file into your own `agent-memory/` directory. The heuristics are domain-biased toward the author's projects and will prime your reviewer with irrelevant patterns. Start with an empty `MEMORY.md` and let the reviewer curate its own.
-
-### How the reviewer curates memory
-
-The reviewer writes to a single `MEMORY.md` in its agent-memory directory after each review, under rules its own prompt enforces (see [`agents/reviewer.md`](agents/reviewer.md) → "Memory Protocol"):
-
-- A heuristic earns a line if (a) the pattern will recur in other projects, (b) it would go unnoticed without explicit review, and (c) the check fits in one sentence. Project-specific findings, style preferences, and already-covered heuristics are excluded.
-- Each heuristic gets one bullet, formatted `- **[pattern name]**: [one-sentence detection heuristic]`. No error types, dates, project names, or multi-line descriptions; the heuristic stands alone.
-- Entries live under the 7 top-level Review Checklist sections: Counting and Totals; Duplicate Detection; References, IDs, and Numbering; Structure and Syntax; Internal Consistency; Completeness; Common AI Slipups.
-- The hard cap is 500 lines. Before adding, the agent counts the file. If adding would exceed 500, it first deletes the entry most similar to another (consolidating near-duplicates) or the entry that is least general. If nothing can be removed without losing value, the new entry is not added.
-
-Net effect: memory grows toward a tight catalogue of AI error patterns that recur across projects.
+It is therefore read-only for project work, while still maintaining its own subagent memory.
 
 ## Using a different model
 
@@ -149,6 +96,17 @@ The reviewer works best when run on a different model than the one that generate
 - Run `/claude-reviewer:qa`; it should delegate to the reviewer subagent.
 - Run `/permissions` to confirm tool access.
 - Run `/doctor` for installation diagnostics.
+
+## Local development
+
+To iterate on this repo without publishing, clone it and load it directly:
+
+```bash
+git clone https://github.com/koenvdheide/claude-reviewer.git
+claude --plugin-dir ./claude-reviewer
+```
+
+Marketplace plugins are copied into `~/.claude/plugins/cache`, so editing a published plugin's source does not update the installed version. `--plugin-dir` loads the plugin from the source path for the current session.
 
 ## Contributing
 
